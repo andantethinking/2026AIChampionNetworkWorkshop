@@ -104,7 +104,7 @@
   .card-presenter{font-size:13.5px; color:var(--text-dim); margin:-2px 0 0;}
   .card-presenter b{color:var(--text); font-weight:700;}
 
-  .card-bottom{margin-top:auto; padding-top:11px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:flex-end; gap:8px;}
+  .card-bottom{margin-top:auto; padding-top:11px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:8px;}
   .material-btn{
     font-size:13px; font-weight:700; text-decoration:none; padding:8px 13px; border-radius:9px;
     border:1px solid var(--line-strong); color:var(--text); display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
@@ -154,10 +154,39 @@
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
+  /* FLIPBOOK */
+  .flipbook-overlay{z-index:110;}
+  .flipbook-shell{
+    width:100%; max-width:900px; height:88vh; max-height:820px;
+    background:var(--bg-soft); border:1px solid var(--line-strong); border-radius:18px;
+    display:flex; flex-direction:column; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.5);
+  }
+  .flipbook-header{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:14px 18px; border-bottom:1px solid var(--line);
+  }
+  .flipbook-title{font-size:14.5px; font-weight:800; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .flipbook-loading{
+    flex:1; display:flex; align-items:center; justify-content:center; color:var(--text-faint); font-size:13.5px;
+  }
+  .flipbook-container{flex:1; position:relative; display:flex; align-items:center; justify-content:center; padding:16px; overflow:hidden;}
+  .flipbook-controls{
+    display:flex; align-items:center; justify-content:center; gap:16px;
+    padding:12px 18px; border-top:1px solid var(--line);
+  }
+  .flipbook-page-indicator{font-size:12.5px; color:var(--text-dim); min-width:60px; text-align:center;}
+  .fb-open-btn{
+    font-size:13px; font-weight:700; padding:8px 13px; border-radius:9px; border:1px solid var(--amber);
+    background:rgba(245,184,51,0.14); color:var(--amber); cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  .fb-open-btn:hover{background:var(--amber); color:#1B1400;}
+
   @media (max-width:640px){
     .nav-inner{flex-wrap:wrap;}
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 </head>
 <body>
 
@@ -187,7 +216,7 @@
 
 <div class="wrap" id="content"></div>
 
-<footer>2026 AI챔피언 네트워크 워크숍 발표자료 페이지 · 관리자 모드에서 자료 링크를 등록/수정할 수 있습니다.</footer>
+<footer>2026 AI챔피언 네트워크 워크숍 발표자료 페이지 · 관리자 모드에서 자료 링크와 플립북 PDF 경로를 등록/수정할 수 있습니다.</footer>
 
 <div class="overlay" id="overlay">
   <div class="modal">
@@ -216,8 +245,12 @@
         <input type="text" id="f-presenter" placeholder="예: 홍길동 프로">
       </div>
       <div class="field">
-        <label>자료 링크 (Google Drive 등)</label>
+        <label>자료 링크 (Google Drive 등, 원본)</label>
         <input type="url" id="f-link" placeholder="https://drive.google.com/...">
+      </div>
+      <div class="field">
+        <label>플립북 PDF 경로 (선택)</label>
+        <input type="text" id="f-pdfPath" placeholder="예: materials/case1.pdf">
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-outline" id="cancelBtn">취소</button>
@@ -229,8 +262,24 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="overlay flipbook-overlay" id="flipbookOverlay">
+  <div class="flipbook-shell">
+    <div class="flipbook-header">
+      <span id="flipbookTitle" class="flipbook-title"></span>
+      <button class="icon-btn" id="flipbookClose" title="닫기">✕</button>
+    </div>
+    <div id="flipbookLoading" class="flipbook-loading">자료를 불러오는 중…</div>
+    <div id="flipbookContainer" class="flipbook-container"></div>
+    <div class="flipbook-controls">
+      <button class="btn btn-ghost btn-sm" id="fbPrev">‹ 이전</button>
+      <span id="fbPageIndicator" class="mono flipbook-page-indicator"></span>
+      <button class="btn btn-ghost btn-sm" id="fbNext">다음 ›</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const SEED_CASES = [{"id": "c1", "num": 1, "category": "성과 공유", "name": "예방접종 후 이상사례 역학조사관 지원 PoC (뉴로심볼릭 구조를 통한 인과성 평가 및 조사 가이드라인 생성)", "presenter": "전명은 프로", "link": "https://docs.google.com/presentation/d/13BAkR6IkT98bGED833S1W5BKVJh-E_mF/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c2", "num": 2, "category": "성과 공유", "name": "온디바이스 AI로 여는 재난안전 서비스 혁신, 행안부 AX 가속화", "presenter": "배창환 프로", "link": "https://docs.google.com/presentation/d/1-oh6WHprbZ6t36VgdHdQBNJqmkaikN7y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c3", "num": 3, "category": "성과 공유", "name": "데이터 기반 ‘행정업무 자동화 프로그램’ 기획·도입 주도", "presenter": "윤영미 프로", "link": "https://docs.google.com/presentation/d/1dWeGVJ3yl0jc__J-EAttsw1m6e5DIA8y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c4", "num": 4, "category": "성과 공유", "name": "통계 책자 편집 자동화 도구 개발", "presenter": "박성아 프로", "link": "https://docs.google.com/presentation/d/1w5rRw1sQN_dhnBWpQE7VUNl-zLXa3dlO/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c5", "num": 5, "category": "해커톤 사례", "name": "한국형 팔란티어시스템 화성에서 구현하다", "presenter": "이동재 프로", "link": "https://docs.google.com/presentation/d/1hq1H8nhB1vhnuSwj45z9O8MMUhqrv4Bd/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c6", "num": 6, "category": "해커톤 사례", "name": "AI와 함께라면 두렵지 않은 조례개정", "presenter": "임지빈 프로", "link": "https://drive.google.com/file/d/17_-IjZ3qfEDYYoJQXyB1KXhvMhofpcMI/view?usp=drive_link"}, {"id": "c7", "num": 7, "category": "해커톤 사례", "name": "자간지옥 벗어나기", "presenter": "권영 프로", "link": "https://drive.google.com/file/d/1epydcz6lCcd27747xh_C9LOh8cmxdhVT/view?usp=drive_link"}, {"id": "c8", "num": 8, "category": "해커톤 사례", "name": "고쳐주지 않고 근거를 보여줍니다(사전과 규정에 기반한 한국어 띄어쓰기 도구 개발 사례)", "presenter": "김소희 프로", "link": "https://docs.google.com/presentation/d/1Z5IgufMctrPdIrMwJYWiG0d1NJo2P2RD/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}];
+const SEED_CASES = [{"id": "c1", "num": 1, "category": "성과 공유", "name": "예방접종 후 이상사례 역학조사관 지원 PoC (뉴로심볼릭 구조를 통한 인과성 평가 및 조사 가이드라인 생성)", "presenter": "전명은 프로", "link": "https://docs.google.com/presentation/d/13BAkR6IkT98bGED833S1W5BKVJh-E_mF/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}, {"id": "c2", "num": 2, "category": "성과 공유", "name": "온디바이스 AI로 여는 재난안전 서비스 혁신, 행안부 AX 가속화", "presenter": "배창환 프로", "link": "https://docs.google.com/presentation/d/1-oh6WHprbZ6t36VgdHdQBNJqmkaikN7y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}, {"id": "c3", "num": 3, "category": "성과 공유", "name": "데이터 기반 ‘행정업무 자동화 프로그램’ 기획·도입 주도", "presenter": "윤영미 프로", "link": "https://docs.google.com/presentation/d/1dWeGVJ3yl0jc__J-EAttsw1m6e5DIA8y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}, {"id": "c4", "num": 4, "category": "성과 공유", "name": "통계 책자 편집 자동화 도구 개발", "presenter": "박성아 프로", "link": "https://docs.google.com/presentation/d/1w5rRw1sQN_dhnBWpQE7VUNl-zLXa3dlO/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}, {"id": "c5", "num": 5, "category": "해커톤 사례", "name": "한국형 팔란티어시스템 화성에서 구현하다", "presenter": "이동재 프로", "link": "https://docs.google.com/presentation/d/1hq1H8nhB1vhnuSwj45z9O8MMUhqrv4Bd/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}, {"id": "c6", "num": 6, "category": "해커톤 사례", "name": "AI와 함께라면 두렵지 않은 조례개정", "presenter": "임지빈 프로", "link": "https://drive.google.com/file/d/17_-IjZ3qfEDYYoJQXyB1KXhvMhofpcMI/view?usp=drive_link", "pdfPath": null}, {"id": "c7", "num": 7, "category": "해커톤 사례", "name": "자간지옥 벗어나기", "presenter": "권영 프로", "link": "https://drive.google.com/file/d/1epydcz6lCcd27747xh_C9LOh8cmxdhVT/view?usp=drive_link", "pdfPath": null}, {"id": "c8", "num": 8, "category": "해커톤 사례", "name": "고쳐주지 않고 근거를 보여줍니다(사전과 규정에 기반한 한국어 띄어쓰기 도구 개발 사례)", "presenter": "김소희 프로", "link": "https://docs.google.com/presentation/d/1Z5IgufMctrPdIrMwJYWiG0d1NJo2P2RD/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true", "pdfPath": null}];
 const EVENT_INFO = {
   date: '2026. 6. 23.(화) 10:30~15:00',
   place: '고양 킨텍스 2전시장 4층 회의실',
@@ -280,10 +329,16 @@ function caseCardHTML(c){
       <button class="icon-btn edit" data-id="${c.id}" title="수정">✎</button>
       <button class="icon-btn del" data-id="${c.id}" title="삭제">🗑</button>
     </div>` : '';
-  const materialBtn = c.link
-    ? `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 다운로드</a>`
-    : `<span class="material-btn pending">자료 준비중</span>`;
   const { main, sub } = splitTitle(c.name);
+  let actionBtns = '';
+  if(c.pdfPath){
+    actionBtns += `<button class="fb-open-btn" data-pdf="${escapeHTML(c.pdfPath)}" data-title="${escapeHTML(main)}">📖 웹에서 보기</button>`;
+    if(c.link) actionBtns += `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 원본</a>`;
+  } else if(c.link){
+    actionBtns += `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 다운로드</a>`;
+  } else {
+    actionBtns += `<span class="material-btn pending">자료 준비중</span>`;
+  }
   return `
   <div class="card" data-id="${c.id}">
     <div class="card-top">
@@ -296,7 +351,7 @@ function caseCardHTML(c){
     </div>
     ${c.presenter ? `<p class="card-presenter"><b>${escapeHTML(c.presenter)}</b></p>` : ''}
     <div class="card-bottom">
-      ${materialBtn}
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">${actionBtns}</div>
       ${adminActions}
     </div>
   </div>`;
@@ -319,6 +374,7 @@ function render(){
 
   document.querySelectorAll('.icon-btn.edit').forEach(btn=>btn.addEventListener('click', ()=>openModal(btn.dataset.id)));
   document.querySelectorAll('.icon-btn.del').forEach(btn=>btn.addEventListener('click', ()=>deleteCase(btn.dataset.id)));
+  document.querySelectorAll('.fb-open-btn').forEach(btn=>btn.addEventListener('click', ()=>openFlipbook(btn.dataset.pdf, btn.dataset.title)));
   const addBtn = document.getElementById('addCardBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>openModal(null));
 }
@@ -348,6 +404,7 @@ function openModal(id){
     document.getElementById('f-name').value = c.name;
     document.getElementById('f-presenter').value = c.presenter || '';
     document.getElementById('f-link').value = c.link || '';
+    document.getElementById('f-pdfPath').value = c.pdfPath || '';
   } else {
     title.textContent = '사례 추가';
     document.getElementById('f-category').value = state.cat !== '전체' ? state.cat : '성과 공유';
@@ -366,6 +423,7 @@ document.getElementById('caseForm').addEventListener('submit', (e)=>{
     name: document.getElementById('f-name').value.trim(),
     presenter: document.getElementById('f-presenter').value.trim() || null,
     link: document.getElementById('f-link').value.trim() || null,
+    pdfPath: document.getElementById('f-pdfPath').value.trim() || null,
   };
   if(state.editingId){
     const idx = CASES.findIndex(c=>c.id===state.editingId);
@@ -466,6 +524,72 @@ function toggleAdmin(){
   input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') attempt(); });
 }
 document.getElementById('adminBtn').addEventListener('click', toggleAdmin);
+
+/* ---------- flipbook (PDF page-turn viewer) ---------- */
+if(window.pdfjsLib){
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+}
+let currentPageFlip = null;
+
+async function openFlipbook(pdfPath, title){
+  const overlay = document.getElementById('flipbookOverlay');
+  const loading = document.getElementById('flipbookLoading');
+  const container = document.getElementById('flipbookContainer');
+  document.getElementById('flipbookTitle').textContent = title || '';
+  document.getElementById('fbPageIndicator').textContent = '';
+  container.innerHTML = '';
+  container.style.display = 'none';
+  loading.style.display = 'flex';
+  loading.textContent = '자료를 불러오는 중…';
+  overlay.classList.add('show');
+
+  if(currentPageFlip){ try{ currentPageFlip.destroy(); }catch(e){} currentPageFlip = null; }
+
+  try{
+    if(!window.pdfjsLib || !window.St) throw new Error('필요한 라이브러리를 불러오지 못했습니다.');
+    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
+    const images = [];
+    for(let i=1; i<=pdf.numPages; i++){
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 1.6 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      images.push(canvas.toDataURL('image/jpeg', 0.85));
+    }
+    loading.style.display = 'none';
+    container.style.display = 'flex';
+    currentPageFlip = new St.PageFlip(container, {
+      width: 480, height: 660, size: 'stretch',
+      minWidth: 260, maxWidth: 900, minHeight: 360, maxHeight: 1100,
+      showCover: false, maxShadowOpacity: 0.5, mobileScrollSupport: false
+    });
+    currentPageFlip.loadFromImages(images);
+    updateFlipbookIndicator();
+    currentPageFlip.on('flip', updateFlipbookIndicator);
+  } catch(err){
+    loading.style.display = 'flex';
+    loading.textContent = '자료를 불러오지 못했어요. PDF 경로를 확인해주세요.';
+  }
+}
+
+function updateFlipbookIndicator(){
+  if(!currentPageFlip) return;
+  const idx = currentPageFlip.getCurrentPageIndex() + 1;
+  const total = currentPageFlip.getPageCount();
+  document.getElementById('fbPageIndicator').textContent = idx + ' / ' + total;
+}
+
+function closeFlipbook(){
+  document.getElementById('flipbookOverlay').classList.remove('show');
+  if(currentPageFlip){ try{ currentPageFlip.destroy(); }catch(e){} currentPageFlip = null; }
+}
+
+document.getElementById('fbPrev').addEventListener('click', ()=>{ if(currentPageFlip) currentPageFlip.flipPrev(); });
+document.getElementById('fbNext').addEventListener('click', ()=>{ if(currentPageFlip) currentPageFlip.flipNext(); });
+document.getElementById('flipbookClose').addEventListener('click', closeFlipbook);
+document.getElementById('flipbookOverlay').addEventListener('click', (e)=>{ if(e.target.id==='flipbookOverlay') closeFlipbook(); });
 
 render();
 </script>
