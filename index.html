@@ -335,7 +335,7 @@ function caseCardHTML(c){
     actionBtns += `<button class="fb-open-btn" data-pdf="${escapeHTML(c.pdfPath)}" data-title="${escapeHTML(main)}">📖 웹에서 보기</button>`;
     if(c.link) actionBtns += `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 원본</a>`;
   } else if(c.link){
-    actionBtns += `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 다운로드</a>`;
+    actionBtns += `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 보기</a>`;
   } else {
     actionBtns += `<span class="material-btn pending">자료 준비중</span>`;
   }
