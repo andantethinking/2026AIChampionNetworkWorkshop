@@ -94,11 +94,13 @@
   .badge-cat-성과.공유,.badge-cat-성과{background:var(--impact-glow); border-color:rgba(91,156,255,0.4); color:#BFD6FF;}
   .badge-cat-해커톤{background:var(--hack-glow); border-color:rgba(255,122,80,0.4); color:#FFCBB5;}
 
+  .title-block{display:flex; flex-direction:column; gap:4px;}
   .card-title{
     font-size:19px; font-weight:900; line-height:1.32; margin:0; letter-spacing:-0.012em;
     background:linear-gradient(95deg,#FFD874 0%,#FFA95C 50%,#FF8562 100%);
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
+  .card-subtitle{font-size:12.5px; color:var(--text-faint); line-height:1.5; margin:0;}
   .card-presenter{font-size:13.5px; color:var(--text-dim); margin:-2px 0 0;}
   .card-presenter b{color:var(--text); font-weight:700;}
 
@@ -228,7 +230,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SEED_CASES = [{"id": "c1", "num": 1, "category": "성과 공유", "name": "예방접종 후 이상사례 역학조사관 지원 PoC (뉴로심볼릭 구조를 통한 인과성 평가 및 조사 가이드라인 생성)", "presenter": "전명은 프로", "link": null}, {"id": "c2", "num": 2, "category": "성과 공유", "name": "온디바이스 AI로 여는 재난안전 서비스 혁신, 행안부 AX 가속화", "presenter": "배창환 프로", "link": null}, {"id": "c3", "num": 3, "category": "성과 공유", "name": "데이터 기반 '행정업무 자동화 프로그램' 기획·도입 주도", "presenter": "윤영미 프로", "link": null}, {"id": "c4", "num": 4, "category": "성과 공유", "name": "통계 책자 편집 자동화 도구 개발", "presenter": "박성아 프로", "link": null}, {"id": "c5", "num": 5, "category": "해커톤 사례", "name": "한국형 팔란티어시스템 화성에서 구현하다", "presenter": "이동재 프로", "link": null}, {"id": "c6", "num": 6, "category": "해커톤 사례", "name": "AI와 함께라면 두렵지 않은 조례개정", "presenter": "임지빈 프로", "link": null}, {"id": "c7", "num": 7, "category": "해커톤 사례", "name": "자간지옥 벗어나기", "presenter": "권영 프로", "link": null}, {"id": "c8", "num": 8, "category": "해커톤 사례", "name": "고쳐주지 않고 근거를 보여줍니다 (사전과 규정에 기반한 한국어 띄어쓰기 도구 개발 사례)", "presenter": "김소희 프로", "link": null}];
+const SEED_CASES = [{"id": "c1", "num": 1, "category": "성과 공유", "name": "예방접종 후 이상사례 역학조사관 지원 PoC (뉴로심볼릭 구조를 통한 인과성 평가 및 조사 가이드라인 생성)", "presenter": "전명은 프로", "link": "https://docs.google.com/presentation/d/13BAkR6IkT98bGED833S1W5BKVJh-E_mF/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c2", "num": 2, "category": "성과 공유", "name": "온디바이스 AI로 여는 재난안전 서비스 혁신, 행안부 AX 가속화", "presenter": "배창환 프로", "link": "https://docs.google.com/presentation/d/1-oh6WHprbZ6t36VgdHdQBNJqmkaikN7y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c3", "num": 3, "category": "성과 공유", "name": "데이터 기반 ‘행정업무 자동화 프로그램’ 기획·도입 주도", "presenter": "윤영미 프로", "link": "https://docs.google.com/presentation/d/1dWeGVJ3yl0jc__J-EAttsw1m6e5DIA8y/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c4", "num": 4, "category": "성과 공유", "name": "통계 책자 편집 자동화 도구 개발", "presenter": "박성아 프로", "link": "https://docs.google.com/presentation/d/1w5rRw1sQN_dhnBWpQE7VUNl-zLXa3dlO/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c5", "num": 5, "category": "해커톤 사례", "name": "한국형 팔란티어시스템 화성에서 구현하다", "presenter": "이동재 프로", "link": "https://docs.google.com/presentation/d/1hq1H8nhB1vhnuSwj45z9O8MMUhqrv4Bd/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}, {"id": "c6", "num": 6, "category": "해커톤 사례", "name": "AI와 함께라면 두렵지 않은 조례개정", "presenter": "임지빈 프로", "link": "https://drive.google.com/file/d/17_-IjZ3qfEDYYoJQXyB1KXhvMhofpcMI/view?usp=drive_link"}, {"id": "c7", "num": 7, "category": "해커톤 사례", "name": "자간지옥 벗어나기", "presenter": "권영 프로", "link": "https://drive.google.com/file/d/1epydcz6lCcd27747xh_C9LOh8cmxdhVT/view?usp=drive_link"}, {"id": "c8", "num": 8, "category": "해커톤 사례", "name": "고쳐주지 않고 근거를 보여줍니다(사전과 규정에 기반한 한국어 띄어쓰기 도구 개발 사례)", "presenter": "김소희 프로", "link": "https://docs.google.com/presentation/d/1Z5IgufMctrPdIrMwJYWiG0d1NJo2P2RD/edit?usp=drive_link&ouid=116863002448487492920&rtpof=true&sd=true"}];
 const EVENT_INFO = {
   date: '2026. 6. 23.(화) 10:30~15:00',
   place: '고양 킨텍스 2전시장 4층 회의실',
@@ -254,6 +256,11 @@ function toast(msg){
 }
 function escapeHTML(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function catBadgeClass(cat){ return cat === '성과 공유' ? 'badge-cat-성과' : 'badge-cat-해커톤'; }
+function splitTitle(name){
+  const m = name.match(/^(.*?)\s*(\([^()]*\))\s*$/);
+  if(m) return { main: m[1], sub: m[2] };
+  return { main: name, sub: null };
+}
 
 function renderInfo(){
   document.getElementById('infoRow').innerHTML = `
@@ -276,13 +283,17 @@ function caseCardHTML(c){
   const materialBtn = c.link
     ? `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 다운로드</a>`
     : `<span class="material-btn pending">자료 준비중</span>`;
+  const { main, sub } = splitTitle(c.name);
   return `
   <div class="card" data-id="${c.id}">
     <div class="card-top">
       <span class="card-num mono">사례 ${String(c.num).padStart(2,'0')}</span>
       <span class="badge ${catBadgeClass(c.category)}">${c.category}</span>
     </div>
-    <p class="card-title">${escapeHTML(c.name)}</p>
+    <div class="title-block">
+      <p class="card-title">${escapeHTML(main)}</p>
+      ${sub ? `<p class="card-subtitle">${escapeHTML(sub)}</p>` : ''}
+    </div>
     ${c.presenter ? `<p class="card-presenter"><b>${escapeHTML(c.presenter)}</b></p>` : ''}
     <div class="card-bottom">
       ${materialBtn}
@@ -388,9 +399,11 @@ function setAdminUI(){
   const zone = document.getElementById('adminZone');
   if(state.admin){
     zone.innerHTML = `
-      <button class="btn btn-amber btn-sm" id="resetBtn">↺ 초기화</button>
+      <button class="btn btn-amber btn-sm" id="exportBtn">⬇ 변경사항 내보내기</button>
+      <button class="btn btn-ghost btn-sm" id="resetBtn">↺ 초기화</button>
       <button class="btn btn-ghost" id="adminBtn">🔓 종료</button>
     `;
+    document.getElementById('exportBtn').addEventListener('click', exportUpdatedPage);
     document.getElementById('resetBtn').addEventListener('click', ()=>{
       if(confirm('모든 변경사항을 지우고 초기 데이터로 되돌릴까요?')){
         localStorage.removeItem(STORAGE_KEY);
@@ -403,6 +416,33 @@ function setAdminUI(){
   } else {
     zone.innerHTML = `<button class="btn btn-ghost" id="adminBtn">🔒 관리자 모드</button>`;
     document.getElementById('adminBtn').addEventListener('click', toggleAdmin);
+  }
+}
+
+/* ---------- export: bake current data as the new default and download the file ---------- */
+async function exportUpdatedPage(){
+  try{
+    const res = await fetch(window.location.href, {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch failed');
+    const originalHTML = await res.text();
+    const re = /const SEED_CASES = \[[\s\S]*?\];/;
+    if(!re.test(originalHTML)){
+      toast('내보내기 형식을 찾을 수 없습니다.');
+      return;
+    }
+    const updatedHTML = originalHTML.replace(re, 'const SEED_CASES = ' + JSON.stringify(CASES) + ';');
+    const blob = new Blob([updatedHTML], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'workshop_materials.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('업데이트된 파일을 다운로드했어요. 이 파일을 다시 업로드하면 모두에게 반영돼요.');
+  } catch(err){
+    toast('내보내기에 실패했어요. 로컬 파일에서는 지원되지 않을 수 있어요.');
   }
 }
 function toggleAdmin(){
