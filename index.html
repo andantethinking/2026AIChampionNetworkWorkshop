@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 AI챔피언 네트워크 워크숍 · 발표자료</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C11; --bg-soft:#12151D;
+    --card:rgba(255,255,255,0.045); --card-hover:rgba(255,255,255,0.075);
+    --line:rgba(255,255,255,0.09); --line-strong:rgba(255,255,255,0.18);
+    --text:#F4F2EC; --text-dim:#9599A8; --text-faint:#5B5F6E;
+    --amber:#F5B833; --amber-glow:rgba(245,184,51,0.32);
+    --impact:#5B9CFF; --impact-glow:rgba(91,156,255,0.22);
+    --hack:#FF7A50; --hack-glow:rgba(255,122,80,0.22);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif; -webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+  .gd{font-family:'Space Grotesk',sans-serif;}
+  ::selection{background:var(--amber); color:#1B1400;}
+
+  /* HERO */
+  .hero{
+    position:relative; overflow:hidden; padding:56px 24px 44px; border-bottom:1px solid var(--line);
+    background:
+      radial-gradient(60% 55% at 18% -10%, rgba(245,184,51,0.14), transparent 60%),
+      radial-gradient(50% 50% at 100% 0%, rgba(91,156,255,0.12), transparent 55%),
+      var(--bg);
+  }
+  .hero-inner{max-width:1160px; margin:0 auto; position:relative;}
+  .hero-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:0.24em; text-transform:uppercase;
+    color:var(--amber); display:flex; align-items:center; gap:9px; animation:fadeUp .6s ease both;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);animation:blink 1.7s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .hero-title{font-size:clamp(30px,5vw,50px); font-weight:900; line-height:1.12; letter-spacing:-0.02em; margin:16px 0 10px; animation:fadeUp .7s .05s ease both;}
+  .hero-title .hl{
+    background:linear-gradient(95deg,#F5B833 0%,#FF9B57 45%,#FF7A50 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{color:var(--text-dim); font-size:15.5px; max-width:600px; line-height:1.7; margin:0 0 26px; animation:fadeUp .7s .1s ease both;}
+
+  .info-row{display:flex; gap:10px; flex-wrap:wrap; animation:fadeUp .7s .15s ease both;}
+  .info-tile{flex:1 1 190px; padding:14px 18px; border-radius:14px; background:var(--card); border:1px solid var(--line);}
+  .info-tile .lbl{font-size:11.5px; color:var(--text-faint); letter-spacing:0.04em;}
+  .info-tile .val{font-size:15px; font-weight:700; color:var(--text); margin-top:5px; line-height:1.4;}
+
+  .admin-zone{display:flex; align-items:center; gap:8px;}
+  .btn{font-family:'Pretendard',sans-serif; font-size:13px; font-weight:700; border-radius:10px; padding:9px 15px; border:1px solid transparent; cursor:pointer; transition:all .15s ease; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;}
+  .btn-ghost{background:rgba(255,255,255,0.06); color:var(--text); border-color:var(--line-strong);}
+  .btn-ghost:hover{background:rgba(255,255,255,0.11);}
+  .btn-amber{background:var(--amber); color:#1B1400;}
+  .btn-amber:hover{filter:brightness(1.08); transform:translateY(-1px);}
+  .btn-outline{background:transparent; color:var(--text); border-color:var(--line-strong);}
+  .btn-outline:hover{background:rgba(255,255,255,0.06);}
+  .btn-sm{padding:6px 10px; font-size:12px; border-radius:8px;}
+  .pw-box{display:flex; gap:6px; align-items:center;}
+  .pw-box input{padding:8px 11px; border-radius:9px; border:1px solid var(--line-strong); background:rgba(255,255,255,0.06); color:var(--text); font-size:13px; width:140px; outline:none;}
+  .pw-box input::placeholder{color:var(--text-faint);}
+  .pw-box input:focus{border-color:var(--amber);}
+
+  /* NAV / FILTER */
+  .nav-wrap{position:sticky; top:0; z-index:40; background:rgba(10,12,17,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+  .nav-inner{max-width:1160px; margin:0 auto; padding:14px 24px; display:flex; gap:7px; flex-wrap:wrap;}
+  .pill{
+    font-size:13.5px; font-weight:700; padding:8px 15px; border-radius:999px;
+    border:1px solid var(--line-strong); background:transparent; color:var(--text-dim); cursor:pointer; transition:all .15s ease;
+  }
+  .pill[data-cat="전체"].active{background:var(--text); border-color:var(--text); color:#0A0C11;}
+  .pill[data-cat="성과 공유"].active{background:var(--impact-glow); border-color:var(--impact); color:#BFD6FF;}
+  .pill[data-cat="해커톤 사례"].active{background:var(--hack-glow); border-color:var(--hack); color:#FFCBB5;}
+
+  /* GRID */
+  .wrap{max-width:1160px; margin:0 auto; padding:30px 24px 70px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px;}
+
+  .card{
+    position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:11px; transition:all .2s ease; backdrop-filter:blur(8px);
+  }
+  .card:hover{background:var(--card-hover); border-color:var(--line-strong); transform:translateY(-2px);}
+  .card-top{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .card-num{font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint);}
+  .badge{font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:6px; border:1px solid var(--line-strong); color:var(--text-dim);}
+  .badge-cat-성과.공유,.badge-cat-성과{background:var(--impact-glow); border-color:rgba(91,156,255,0.4); color:#BFD6FF;}
+  .badge-cat-해커톤{background:var(--hack-glow); border-color:rgba(255,122,80,0.4); color:#FFCBB5;}
+
+  .card-title{
+    font-size:19px; font-weight:900; line-height:1.32; margin:0; letter-spacing:-0.012em;
+    background:linear-gradient(95deg,#FFD874 0%,#FFA95C 50%,#FF8562 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .card-presenter{font-size:13.5px; color:var(--text-dim); margin:-2px 0 0;}
+  .card-presenter b{color:var(--text); font-weight:700;}
+
+  .card-bottom{margin-top:auto; padding-top:11px; border-top:1px solid var(--line); display:flex; align-items:center; justify-content:flex-end; gap:8px;}
+  .material-btn{
+    font-size:13px; font-weight:700; text-decoration:none; padding:8px 13px; border-radius:9px;
+    border:1px solid var(--line-strong); color:var(--text); display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .material-btn:hover{background:var(--text); color:#0A0C11; border-color:var(--text);}
+  .material-btn.pending{color:var(--text-faint); border-style:dashed; cursor:default; pointer-events:none;}
+  .admin-actions{display:flex; gap:5px;}
+  .icon-btn{
+    width:28px;height:28px; border-radius:8px; border:1px solid var(--line-strong); background:transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--text-dim);
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.08); color:var(--text);}
+  .icon-btn.del:hover{background:rgba(255,90,90,0.12); color:#FF8A8A; border-color:rgba(255,90,90,0.4);}
+
+  .add-card{
+    border:1.5px dashed var(--line-strong); border-radius:var(--radius); min-height:150px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--text-faint); font-weight:700; font-size:13px; background:transparent;
+  }
+  .add-card:hover{border-color:var(--amber); color:var(--amber); background:rgba(245,184,51,0.05);}
+  .empty-state{padding:50px 20px; text-align:center; color:var(--text-faint);}
+
+  footer{max-width:1160px; margin:0 auto; padding:0 24px 44px; color:var(--text-faint); font-size:13px;}
+
+  /* MODAL */
+  .overlay{position:fixed; inset:0; background:rgba(5,6,9,0.7); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; z-index:100; padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--bg-soft); border:1px solid var(--line-strong); border-radius:18px; width:100%; max-width:440px; padding:24px; box-shadow:0 30px 80px rgba(0,0,0,0.5); max-height:88vh; overflow-y:auto;}
+  .modal h3{margin:0 0 4px; font-size:18px;}
+  .modal .modal-sub{font-size:12.5px; color:var(--text-dim); margin:0 0 18px;}
+  .field{margin-bottom:13px;}
+  .field label{display:block; font-size:12.5px; font-weight:700; margin-bottom:6px; color:var(--text-dim);}
+  .field select, .field input, .field textarea{
+    width:100%; padding:10px 11px; border-radius:9px; border:1px solid var(--line-strong);
+    font-family:'Pretendard',sans-serif; font-size:13.5px; outline:none; background:rgba(255,255,255,0.04); color:var(--text); resize:vertical;
+  }
+  .field select:focus, .field input:focus, .field textarea:focus{border-color:var(--amber);}
+  .field-row{display:flex; gap:10px;}
+  .field-row > *{flex:1;}
+  .modal-actions{display:flex; gap:8px; margin-top:18px;}
+  .modal-actions .btn{flex:1;}
+
+  .toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--text); color:#0A0C11; padding:11px 20px; border-radius:11px; font-size:13px; font-weight:700;
+    opacity:0; pointer-events:none; transition:all .25s ease; z-index:200;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:640px){
+    .nav-inner{flex-wrap:wrap;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>2026 AI CHAMPION NETWORK</div>
+        <h1 class="hero-title">네트워크 워크숍 <span class="hl">발표자료</span></h1>
+        <p class="hero-sub">공공 AX 사례 공유 및 AI챔피언 네트워크 활동방안 논의 · 성과 공유 4건, 해커톤 사례 4건 총 8개 발표를 확인하세요.</p>
+      </div>
+      <div class="admin-zone" id="adminZone">
+        <button class="btn btn-ghost" id="adminBtn">🔒 관리자 모드</button>
+      </div>
+    </div>
+    <div class="info-row" id="infoRow"></div>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav-inner" id="catPills">
+    <button class="pill active" data-cat="전체">전체</button>
+    <button class="pill" data-cat="성과 공유">성과 공유</button>
+    <button class="pill" data-cat="해커톤 사례">해커톤 사례</button>
+  </div>
+</div>
+
+<div class="wrap" id="content"></div>
+
+<footer>2026 AI챔피언 네트워크 워크숍 발표자료 페이지 · 관리자 모드에서 자료 링크를 등록/수정할 수 있습니다.</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle">사례 추가</h3>
+    <p class="modal-sub">발표 사례 정보를 입력한 뒤 저장하세요.</p>
+    <form id="caseForm">
+      <div class="field-row">
+        <div class="field">
+          <label>구분</label>
+          <select id="f-category">
+            <option value="성과 공유">성과 공유</option>
+            <option value="해커톤 사례">해커톤 사례</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>번호</label>
+          <input type="number" id="f-num" min="1" placeholder="예: 1">
+        </div>
+      </div>
+      <div class="field">
+        <label>발표 제목</label>
+        <textarea id="f-name" rows="2" required placeholder="예: 예방접종 후 이상사례 역학조사관 지원 PoC"></textarea>
+      </div>
+      <div class="field">
+        <label>발표자</label>
+        <input type="text" id="f-presenter" placeholder="예: 홍길동 프로">
+      </div>
+      <div class="field">
+        <label>자료 링크 (Google Drive 등)</label>
+        <input type="url" id="f-link" placeholder="https://drive.google.com/...">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="cancelBtn">취소</button>
+        <button type="submit" class="btn btn-amber">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SEED_CASES = [{"id": "c1", "num": 1, "category": "성과 공유", "name": "예방접종 후 이상사례 역학조사관 지원 PoC (뉴로심볼릭 구조를 통한 인과성 평가 및 조사 가이드라인 생성)", "presenter": "전명은 프로", "link": null}, {"id": "c2", "num": 2, "category": "성과 공유", "name": "온디바이스 AI로 여는 재난안전 서비스 혁신, 행안부 AX 가속화", "presenter": "배창환 프로", "link": null}, {"id": "c3", "num": 3, "category": "성과 공유", "name": "데이터 기반 '행정업무 자동화 프로그램' 기획·도입 주도", "presenter": "윤영미 프로", "link": null}, {"id": "c4", "num": 4, "category": "성과 공유", "name": "통계 책자 편집 자동화 도구 개발", "presenter": "박성아 프로", "link": null}, {"id": "c5", "num": 5, "category": "해커톤 사례", "name": "한국형 팔란티어시스템 화성에서 구현하다", "presenter": "이동재 프로", "link": null}, {"id": "c6", "num": 6, "category": "해커톤 사례", "name": "AI와 함께라면 두렵지 않은 조례개정", "presenter": "임지빈 프로", "link": null}, {"id": "c7", "num": 7, "category": "해커톤 사례", "name": "자간지옥 벗어나기", "presenter": "권영 프로", "link": null}, {"id": "c8", "num": 8, "category": "해커톤 사례", "name": "고쳐주지 않고 근거를 보여줍니다 (사전과 규정에 기반한 한국어 띄어쓰기 도구 개발 사례)", "presenter": "김소희 프로", "link": null}];
+const EVENT_INFO = {
+  date: '2026. 6. 23.(화) 10:30~15:00',
+  place: '고양 킨텍스 2전시장 4층 회의실',
+  target: 'AI챔피언 고급과정 인증자, AI챔피언 블루 스터디 등 160명'
+};
+const STORAGE_KEY = 'workshop_cases_v1';
+const ADMIN_PW = 'admin2026';
+
+let state = { cat:'전체', admin:false, editingId:null };
+
+function loadCases(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw){ try{ return JSON.parse(raw); }catch(e){ return structuredClone(SEED_CASES); } }
+  return structuredClone(SEED_CASES);
+}
+function saveCases(data){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+let CASES = loadCases();
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._timer); t._timer = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function escapeHTML(s){ if(!s) return ''; const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function catBadgeClass(cat){ return cat === '성과 공유' ? 'badge-cat-성과' : 'badge-cat-해커톤'; }
+
+function renderInfo(){
+  document.getElementById('infoRow').innerHTML = `
+    <div class="info-tile"><div class="lbl">일시</div><div class="val">${EVENT_INFO.date}</div></div>
+    <div class="info-tile"><div class="lbl">장소</div><div class="val">${EVENT_INFO.place}</div></div>
+    <div class="info-tile"><div class="lbl">대상</div><div class="val">${EVENT_INFO.target}</div></div>
+  `;
+}
+
+function matchesFilter(c){
+  return state.cat === '전체' || c.category === state.cat;
+}
+
+function caseCardHTML(c){
+  const adminActions = state.admin ? `
+    <div class="admin-actions">
+      <button class="icon-btn edit" data-id="${c.id}" title="수정">✎</button>
+      <button class="icon-btn del" data-id="${c.id}" title="삭제">🗑</button>
+    </div>` : '';
+  const materialBtn = c.link
+    ? `<a class="material-btn" href="${c.link}" target="_blank" rel="noopener">↗ 자료 다운로드</a>`
+    : `<span class="material-btn pending">자료 준비중</span>`;
+  return `
+  <div class="card" data-id="${c.id}">
+    <div class="card-top">
+      <span class="card-num mono">사례 ${String(c.num).padStart(2,'0')}</span>
+      <span class="badge ${catBadgeClass(c.category)}">${c.category}</span>
+    </div>
+    <p class="card-title">${escapeHTML(c.name)}</p>
+    ${c.presenter ? `<p class="card-presenter"><b>${escapeHTML(c.presenter)}</b></p>` : ''}
+    <div class="card-bottom">
+      ${materialBtn}
+      ${adminActions}
+    </div>
+  </div>`;
+}
+
+function render(){
+  renderInfo();
+  const items = CASES.filter(matchesFilter).sort((a,b)=>a.num-b.num);
+  const content = document.getElementById('content');
+  let html = '';
+  if(items.length === 0){
+    html += `<div class="empty-state">조건에 맞는 사례가 없습니다.</div>`;
+  } else {
+    html += `<div class="grid">${items.map(caseCardHTML).join('')}</div>`;
+  }
+  if(state.admin){
+    html += `<div class="grid" style="margin-top:${items.length?14:0}px;"><div class="add-card" id="addCardBtn">+ 새 사례 추가</div></div>`;
+  }
+  content.innerHTML = html;
+
+  document.querySelectorAll('.icon-btn.edit').forEach(btn=>btn.addEventListener('click', ()=>openModal(btn.dataset.id)));
+  document.querySelectorAll('.icon-btn.del').forEach(btn=>btn.addEventListener('click', ()=>deleteCase(btn.dataset.id)));
+  const addBtn = document.getElementById('addCardBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>openModal(null));
+}
+
+/* ---------- CRUD ---------- */
+function deleteCase(id){
+  const item = CASES.find(c=>c.id===id);
+  if(!item) return;
+  if(!confirm(`"${item.name}" 사례를 삭제할까요?`)) return;
+  CASES = CASES.filter(c=>c.id!==id);
+  saveCases(CASES);
+  toast('사례가 삭제되었습니다.');
+  render();
+}
+
+function openModal(id){
+  state.editingId = id;
+  const overlay = document.getElementById('overlay');
+  const title = document.getElementById('modalTitle');
+  const form = document.getElementById('caseForm');
+  form.reset();
+  if(id){
+    const c = CASES.find(x=>x.id===id);
+    title.textContent = '사례 수정';
+    document.getElementById('f-category').value = c.category;
+    document.getElementById('f-num').value = c.num;
+    document.getElementById('f-name').value = c.name;
+    document.getElementById('f-presenter').value = c.presenter || '';
+    document.getElementById('f-link').value = c.link || '';
+  } else {
+    title.textContent = '사례 추가';
+    document.getElementById('f-category').value = state.cat !== '전체' ? state.cat : '성과 공유';
+    const nextNum = CASES.reduce((m,c)=>Math.max(m, c.num||0), 0) + 1;
+    document.getElementById('f-num').value = nextNum;
+  }
+  overlay.classList.add('show');
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); state.editingId=null; }
+
+document.getElementById('caseForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const payload = {
+    category: document.getElementById('f-category').value,
+    num: parseInt(document.getElementById('f-num').value) || 0,
+    name: document.getElementById('f-name').value.trim(),
+    presenter: document.getElementById('f-presenter').value.trim() || null,
+    link: document.getElementById('f-link').value.trim() || null,
+  };
+  if(state.editingId){
+    const idx = CASES.findIndex(c=>c.id===state.editingId);
+    CASES[idx] = {...CASES[idx], ...payload};
+    toast('사례가 수정되었습니다.');
+  } else {
+    const nextId = CASES.reduce((m,c)=>Math.max(m, parseInt((c.id||'c0').replace('c',''))||0), 0) + 1;
+    payload.id = 'c' + nextId;
+    CASES.push(payload);
+    toast('사례가 추가되었습니다.');
+  }
+  saveCases(CASES);
+  closeModal();
+  render();
+});
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+document.getElementById('overlay').addEventListener('click', (e)=>{ if(e.target.id==='overlay') closeModal(); });
+
+/* ---------- filter ---------- */
+document.getElementById('catPills').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.pill');
+  if(!btn) return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  state.cat = btn.dataset.cat;
+  render();
+});
+
+/* ---------- admin ---------- */
+function setAdminUI(){
+  const zone = document.getElementById('adminZone');
+  if(state.admin){
+    zone.innerHTML = `
+      <button class="btn btn-amber btn-sm" id="resetBtn">↺ 초기화</button>
+      <button class="btn btn-ghost" id="adminBtn">🔓 종료</button>
+    `;
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      if(confirm('모든 변경사항을 지우고 초기 데이터로 되돌릴까요?')){
+        localStorage.removeItem(STORAGE_KEY);
+        CASES = structuredClone(SEED_CASES);
+        toast('초기 데이터로 복원되었습니다.');
+        render();
+      }
+    });
+    document.getElementById('adminBtn').addEventListener('click', toggleAdmin);
+  } else {
+    zone.innerHTML = `<button class="btn btn-ghost" id="adminBtn">🔒 관리자 모드</button>`;
+    document.getElementById('adminBtn').addEventListener('click', toggleAdmin);
+  }
+}
+function toggleAdmin(){
+  if(state.admin){ state.admin=false; setAdminUI(); render(); return; }
+  const zone = document.getElementById('adminZone');
+  zone.innerHTML = `
+    <div class="pw-box">
+      <input type="password" id="pwInput" placeholder="관리자 비밀번호">
+      <button class="btn btn-amber btn-sm" id="pwGoBtn">확인</button>
+      <button class="btn btn-ghost btn-sm" id="pwCancelBtn">✕</button>
+    </div>`;
+  const input = document.getElementById('pwInput');
+  input.focus();
+  const attempt = ()=>{
+    if(input.value === ADMIN_PW){
+      state.admin = true; setAdminUI(); render(); toast('관리자 모드가 활성화되었습니다.');
+    } else { toast('비밀번호가 올바르지 않습니다.'); setAdminUI(); }
+  };
+  document.getElementById('pwGoBtn').addEventListener('click', attempt);
+  document.getElementById('pwCancelBtn').addEventListener('click', setAdminUI);
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') attempt(); });
+}
+document.getElementById('adminBtn').addEventListener('click', toggleAdmin);
+
+render();
+</script>
+</body>
+</html>
